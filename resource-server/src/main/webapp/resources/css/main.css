@@ -1,0 +1,18 @@
+@CHARSET "UTF-8";
+
+.form-group.required .control-label:after { 
+   content:"*";
+   color:red;
+}
+
+.margin-top-1 {
+	margin-top: 1em
+}
+
+.margin-bottom-1 {
+	margin-bottom: 1em
+}
+
+.no-margin {
+	margin: 0px;
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<oauth2:expression-handler id="oauthExpressionHandler" />
+	
+	<oauth2:web-expression-handler id="oauthWebExpressionHandler" />
+	
+	<oauth2:authorization-server client-details-service-ref="jdbcClientDetailsService"
+		token-services-ref="tokenService"
+		authorization-request-manager-ref="defaultOAuth2RequestFactory"
+		user-approval-handler-ref="tokenStoreUserApprovalHandler"
+		user-approval-page="forward:/oauth/confirm_access"
+		error-page="forward:/oauth/error">
+		<oauth2:authorization-code authorization-code-services-ref="jdbcAuthorizationCodeService" />
+		<oauth2:implicit />
+		<oauth2:refresh-token />
+		<oauth2:client-credentials />
+		<oauth2:password />
+	</oauth2:authorization-server>
+	
+	<!-- Authorization Code or Implicit -->
+	
+	<bean id="defaultOAuth2RequestFactory" class="org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory">
+		 <constructor-arg ref="jdbcClientDetailsService" />
+	</bean>
+	
+	<bean id="tokenStoreUserApprovalHandler" class="org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler">
+		<property name="tokenStore" ref="tokenStore"></property>
+		<property name="clientDetailsService" ref="jdbcClientDetailsService"></property>
+		<property name="requestFactory" ref="defaultOAuth2RequestFactory"></property>
+	</bean>
+    
+	<bean id="jdbcAuthorizationCodeService" class="org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices">
+        <constructor-arg ref="dataSource" />
+    </bean>
+    
+    <!-- End Authorization Code -->
+
+	<bean id="clientDetailsUserDetailsService" class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">	
+		<constructor-arg ref="jdbcClientDetailsService" />
+	</bean>
+
+	<bean id="jdbcClientDetailsService" class="org.springframework.security.oauth2.provider.client.JdbcClientDetailsService">
+		<constructor-arg name="dataSource" ref="dataSource"></constructor-arg>
+	</bean>
+	
+	<bean id="tokenService" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+		<property name="tokenStore" ref="tokenStore" />
+		<property name="supportRefreshToken" value="true" />
+		<property name="accessTokenValiditySeconds" value="3600" />
+		<property name="refreshTokenValiditySeconds" value="36000"/>
+	</bean>
+	
+	<bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.JdbcTokenStore">
+		<constructor-arg name="dataSource" ref="dataSource"></constructor-arg>
+	</bean>
+</beans>
