@@ -12,9 +12,6 @@
 		<security:csrf disabled="true"/>
 	</security:http>
 	
-<!-- 	<security:http pattern="/login" security="none"  />
-	<security:http pattern="/resources/**" security="none" /> -->
-	
 	<security:http>
 		<security:intercept-url pattern="/login" access="permitAll" />
 		<security:intercept-url pattern="/resources/**" access="permitAll" />

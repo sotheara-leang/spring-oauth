@@ -7,7 +7,12 @@
 	
 	var page = {
 		init: function() {
-			window.opener.initCallbackData(code, accessToken, state);
+			window.opener.$("#state").val(state);
+			if (code !== '') {
+				window.opener.$("#code").val(code).change();
+			} else if (accessToken !== '') {
+				window.opener.$("#accessToken").val(accessToken).change();
+			}
 			window.close();
 		}
 	};
